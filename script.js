@@ -9,52 +9,52 @@ document.addEventListener("DOMContentLoaded", () => {
       custom: true, // Ativa botão "Montar"
       unitPrice: 15.0, // Preço por flor
       minQty: 6,
-      img: "assets/img/buque-custom.jpg", // Substitua por foto real
+      img: "https://tessfleur.com.br/wp-content/uploads/2025/07/ad973dc2a5bb6c487ab88d59eb887409.jpeg",
       colors: ["Vermelha", "Branca", "Rosa", "Amarela", "Azul", "Salmão"],
     },
 
     // PRODUTOS NORMAIS
     {
       id: 1,
-      name: "Buquê Amor (12 Rosas)",
+      name: "12 Rosas Buquê(o queridinho)",
       category: "buques",
-      price: 180.0,
-      img: "assets/img/buque-12.jpg",
+      price: 160.0,
+      img: "src/img/flor12.jpg",
     },
     {
       id: 2,
-      name: "Buquê Tropical",
+      name: "6 Rosas Buquê",
       category: "buques",
-      price: 120.0,
-      img: "assets/img/buque-misto.jpg",
+      price: 110.0,
+      img: "src/img/flor6.jpg",
     },
     {
       id: 3,
-      name: "Cesta Bom Dia",
+      name: "Cesta De Cafe da Manhã",
       category: "cestas",
-      price: 250.0,
-      img: "assets/img/cesta-cafe.jpg",
+      price: 255.0,
+      img: "src/img/cafeflor.jpg",
     },
     {
       id: 4,
-      name: "Cesta Chocolates",
+      name: "Cesta de Maternidade",
       category: "cestas",
-      price: 160.0,
-      img: "assets/img/cesta-choc.jpg",
+      price: 250.0,
+      img: "src/img/cestaflor.jpg",
     },
     {
       id: 5,
       name: "Kit Bebê",
       category: "kits",
-      price: 145.9,
-      img: "assets/img/kit-bebe.jpg",
+      price: 250.0,
+      img: "src/img/kitbebe.png",
     },
     {
       id: 6,
-      name: "Box Luxo",
+      name: "Box de Rosas",
       category: "kits",
-      price: 210.0,
-      img: "assets/img/box-luxo.jpg",
+      price: 195.0,
+      img: "src/img/boxflor.jpg",
     },
   ];
 
@@ -276,21 +276,43 @@ document.addEventListener("DOMContentLoaded", () => {
     alert("Buquê personalizado criado!");
   };
 
-  // --- 6. CHECKOUT WHATSAPP ---
+  // --- 6. CHECKOUT WHATSAPP (ATUALIZADO COM LINKS DE FOTO) ---
   document.getElementById("checkout-btn").onclick = () => {
     if (!cart.length) return alert("Carrinho vazio!");
     const nome = document.getElementById("client-name").value;
     const tel = document.getElementById("client-phone").value;
     if (!nome || !tel) return alert("Preencha nome e telefone!");
 
+    // Calcula o endereço base do site para criar o link da foto
+    const baseUrl =
+      window.location.origin +
+      window.location.pathname.replace("index.html", "");
+
     let msg = `Olá! Sou *${nome}*.\nMeu Pedido:\n`;
     let total = 0;
+
     cart.forEach((i) => {
       msg += `\n- ${i.name} | ${format(i.price)}`;
       if (i.desc) msg += `\n  (${i.desc})`;
+
+      // --- LÓGICA DO LINK DA FOTO ---
+      if (i.img) {
+        // Se for link externo (começa com http), usa direto. Se for local, monta o link.
+        let fullLink = i.img;
+        if (!i.img.startsWith("http")) {
+          const cleanImgPath = i.img.startsWith("./")
+            ? i.img.substring(2)
+            : i.img;
+          fullLink = `${baseUrl}${cleanImgPath}`;
+        }
+        msg += `\n  📸 Foto: ${fullLink}`;
+      }
+
       total += i.price;
+      msg += `\n`; // Pula linha
     });
     msg += `\n\n*Total: ${format(total)}*`;
+    msg += `\n\nAguardo confirmação!`;
 
     // Abre WhatsApp
     window.open(`https://wa.me/5568999999999?text=${encodeURIComponent(msg)}`);
@@ -319,6 +341,39 @@ document.addEventListener("DOMContentLoaded", () => {
       Salmão: "#ff8a65",
     };
     return map[name] || "#ccc";
+  }
+
+  // --- 8. VISUALIZADOR DE IMAGEM (NOVO) ---
+  // Este código faz a imagem abrir em tela cheia ao clicar
+  const imageModal = document.getElementById("image-viewer-modal");
+  const fullImage = document.getElementById("full-image");
+  const closeViewer = document.querySelector(".close-viewer");
+
+  document.addEventListener("click", (e) => {
+    // Se clicar em qualquer imagem com a classe 'card-img'
+    if (e.target.classList.contains("card-img")) {
+      if (imageModal && fullImage) {
+        imageModal.style.display = "flex"; // Mostra modal
+        fullImage.src = e.target.src; // Copia a imagem clicada
+        setTimeout(() => imageModal.classList.add("open"), 10);
+      }
+    }
+  });
+
+  if (closeViewer) {
+    closeViewer.onclick = () => {
+      imageModal.classList.remove("open");
+      setTimeout(() => (imageModal.style.display = "none"), 300);
+    };
+  }
+
+  if (imageModal) {
+    imageModal.onclick = (e) => {
+      if (e.target === imageModal) {
+        imageModal.classList.remove("open");
+        setTimeout(() => (imageModal.style.display = "none"), 300);
+      }
+    };
   }
 
   // Inicia App

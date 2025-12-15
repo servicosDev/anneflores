@@ -674,3 +674,40 @@ header {
     display: inline-block;
     vertical-align: middle;
 }
+
+/* --- MODAL VISUALIZADOR DE IMAGEM --- */
+.image-viewer {
+    background: rgba(0, 0, 0, 0.9); /* Fundo bem escuro */
+    align-items: center; /* Centraliza verticalmente */
+    backdrop-filter: blur(5px);
+}
+
+.modal-image-content {
+    max-width: 90%;
+    max-height: 90vh;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    animation: zoomIn 0.3s ease;
+}
+
+.close-viewer {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
+    transition: 0.3s;
+}
+
+.close-viewer:hover { color: var(--primary); }
+
+@keyframes zoomIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* Cursor de lupa na imagem do produto */
+.card-img { cursor: zoom-in; }
