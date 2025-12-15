@@ -315,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
     msg += `\n\nAguardo confirmação!`;
 
     // Abre WhatsApp
-    window.open(`https://wa.me/5568999999999?text=${encodeURIComponent(msg)}`);
+    window.open(`https://wa.me/5568999987876?text=${encodeURIComponent(msg)}`);
   };
 
   // --- 7. UTILITÁRIOS E INICIALIZAÇÃO ---
