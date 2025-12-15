@@ -1,221 +1,16 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <meta name="theme-color" content="#ffffff">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    
-    <title>Anne Flores | App</title>
-    
+    <meta name="theme-color" content="#d86b7c">
+    <title>Anne Flores | Boutique Floral</title>
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
-    <style>
-        /* --- CONFIGURAÇÕES GERAIS E VARIÁVEIS --- */
-        :root {
-            /* Cores da Marca */
-            --primary-color: #d86b7c; 
-            --primary-hover: #c05c6b;
-            --secondary-color: #fce4ec;
-            --text-dark: #333;
-            --text-light: #666;
-            --white: #fff;
-            --radius: 16px; 
-            
-            /* Variáveis do Glassmorphism (Liquid Glass) */
-            --glass-bg: rgba(255, 255, 255, 0.75);
-            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
-            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
-            --backdrop-blur: blur(12px);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            background: linear-gradient(135deg, #fff0f3 0%, #ffffff 100%);
-            color: var(--text-dark);
-            min-height: 100vh;
-            padding-bottom: 80px; /* Espaço para a barra inferior no mobile */
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-        /* --- HEADER DESKTOP --- */
-        header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: var(--backdrop-blur);
-            -webkit-backdrop-filter: var(--backdrop-blur);
-            border-bottom: var(--glass-border);
-            padding: 15px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .header-content { display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; gap: 10px; }
-        .logo h1 { font-size: 1.5rem; color: var(--text-dark); font-weight: 700; }
-        .logo-icon { font-size: 2rem; background: var(--secondary-color); border-radius: 50%; padding: 5px; box-shadow: inset 0 0 10px rgba(216, 107, 124, 0.2); }
-        .nav-btn { background: none; border: none; cursor: pointer; margin-left: 10px; color: var(--text-dark); transition: transform 0.2s; }
-        .nav-btn:hover { transform: scale(1.1); color: var(--primary-color); }
-
-        /* Badge (Contador) */
-        .cart-badge {
-            position: absolute;
-            top: -5px; right: -5px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            color: white; font-size: 0.7rem; width: 20px; height: 20px;
-            border-radius: 50%; display: none; align-items: center; justify-content: center;
-            font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 2px solid white;
-        }
-
-        /* --- HERO SECTION --- */
-        .hero {
-            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1490750967868-58cb75069fe6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-            background-size: cover; background-position: center 60%;
-            height: 280px; display: flex; align-items: center; text-align: center; color: white;
-            border-radius: 0 0 var(--radius) var(--radius); margin-bottom: 20px;
-        }
-        .hero-text h2 { font-size: 2.2rem; margin-bottom: 10px; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        .cta-button {
-            display: inline-block; background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            color: white; padding: 12px 25px; text-decoration: none; border-radius: 30px; margin-top: 15px;
-            font-weight: bold; transition: all 0.3s; box-shadow: 0 5px 15px rgba(216, 107, 124, 0.4);
-        }
-        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(216, 107, 124, 0.6); }
-
-        /* --- INFO BAR --- */
-        .info-bar { padding: 15px 0; margin-bottom: 20px; }
-        .info-bar .container { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: center; }
-        .status, .location {
-            display: flex; align-items: center; gap: 10px; color: var(--text-dark);
-            background: var(--glass-bg); padding: 10px 15px; border-radius: 30px; border: var(--glass-border);
-        }
-        .status-icon { color: #4CAF50; }
-
-        /* --- QUICK ACTIONS (Glass) --- */
-        .quick-actions { display: flex; gap: 15px; margin-bottom: 40px; overflow-x: auto; padding: 10px 5px; }
-        .action-btn {
-            flex: 1; min-width: 100px; background: var(--glass-bg); backdrop-filter: var(--backdrop-blur);
-            -webkit-backdrop-filter: var(--backdrop-blur); border: var(--glass-border); box-shadow: var(--glass-shadow);
-            padding: 20px 15px; border-radius: var(--radius); display: flex; flex-direction: column; align-items: center;
-            gap: 10px; cursor: pointer; transition: 0.3s; font-weight: 600; color: var(--text-dark);
-        }
-        .action-btn:hover { transform: translateY(-5px); background: rgba(255,255,255,0.9); color: var(--primary-color); border-color: var(--primary-color); }
-        .action-btn .material-icons { color: var(--primary-color); font-size: 1.8rem; }
-
-        /* --- PRODUTOS --- */
-        .products-section { padding-bottom: 40px; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .section-header h3 { font-size: 1.5rem; position: relative; }
-        .section-header h3::after { content: ''; display: block; width: 50px; height: 3px; background: var(--primary-color); margin-top: 5px; border-radius: 2px; }
-        .view-all { color: var(--text-light); text-decoration: none; font-size: 0.9rem; font-weight: bold; transition: color 0.2s;}
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; }
-
-        /* Cards Glass */
-        .card {
-            background: var(--glass-bg); backdrop-filter: var(--backdrop-blur); -webkit-backdrop-filter: var(--backdrop-blur);
-            border: var(--glass-border); box-shadow: var(--glass-shadow); border-radius: var(--radius);
-            overflow: hidden; transition: all 0.3s ease; display: flex; flex-direction: column; height: 100%;
-        }
-        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 40px rgba(31, 38, 135, 0.15); }
-        .card-img { width: 100%; height: 180px; object-fit: cover; background-color: #eee; border-bottom: 1px solid rgba(255,255,255,0.5); }
-        .card-body { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
-        .card-title { font-size: 1.1rem; margin-bottom: 5px; font-weight: 700; }
-        .card-desc { font-size: 0.85rem; color: var(--text-light); margin-bottom: 15px; flex-grow: 1; line-height: 1.4; }
-        .card-price { color: var(--primary-color); font-weight: 800; font-size: 1.2rem; }
-        .add-btn {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)); color: white; border: none;
-            padding: 10px; border-radius: 25px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px;
-            display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s;
-            box-shadow: 0 4px 10px rgba(216, 107, 124, 0.3);
-        }
-        .add-btn:hover { transform: scale(1.02); box-shadow: 0 6px 15px rgba(216, 107, 124, 0.5); }
-
-        /* Footer */
-        footer { text-align: center; padding: 30px 20px; color: var(--text-light); font-size: 0.9rem; margin-top: 40px; border-top: var(--glass-border); }
-
-        /* --- MODAL (Carrinho) --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-            z-index: 1000; display: none; justify-content: center; align-items: center; opacity: 0; transition: all 0.3s;
-        }
-        .modal-overlay.open { display: flex; opacity: 1; }
-        .modal-content {
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            width: 90%; max-width: 450px; border-radius: 20px; padding: 25px; max-height: 85vh;
-            display: flex; flex-direction: column; transform: translateY(20px); transition: transform 0.3s;
-        }
-        .modal-overlay.open .modal-content { transform: translateY(0); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 15px; margin-bottom: 15px; }
-        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .cart-items-container { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; padding-right: 5px; }
-
-        /* Inputs Cliente */
-        .client-info { background-color: rgba(255,255,255,0.5); padding: 15px; border-radius: 15px; margin-bottom: 20px; border: var(--glass-border); }
-        .client-info h4 { font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;}
-        .input-group { margin-bottom: 10px; }
-        .input-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; font-weight: 600; color: var(--text-light); }
-        .input-group input {
-            width: 100%; padding: 10px; border: 2px solid transparent; background: rgba(255,255,255,0.8);
-            border-radius: 10px; outline: none; transition: 0.3s; font-size: 1rem; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .input-group input:focus { border-color: var(--primary-color); background: white; }
-
-        /* Item Carrinho */
-        .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.6); border-radius: 12px; }
-        .remove-item { color: #ff4444; font-weight: 600; font-size: 0.85rem; cursor: pointer; background: none; border: none;}
-        .total-row { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 800; margin-bottom: 20px; color: var(--text-dark); }
-        .total-row span:last-child { color: var(--primary-color); }
-        .checkout-btn {
-            width: 100%; background: linear-gradient(135deg, #25D366, #20bd5a); color: white; border: none; padding: 15px;
-            border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center;
-            justify-content: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-        }
-        .checkout-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.6); }
-
-        /* --- BARRA DE NAVEGAÇÃO INFERIOR (MOBILE) --- */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-            display: none; justify-content: space-around; align-items: center; z-index: 999;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none;
-            color: var(--text-light); font-size: 0.7rem; gap: 4px; width: 25%; height: 100%; transition: 0.2s; cursor: pointer;
-        }
-        .nav-item .material-icons { font-size: 1.6rem; color: #999; transition: 0.2s; }
-        .nav-item.active .material-icons, .nav-item:active .material-icons { color: var(--primary-color); transform: translateY(-2px); }
-        .nav-item.active span { color: var(--primary-color); font-weight: 600; }
-        .mobile-badge { top: 5px; right: 25%; width: 18px; height: 18px; font-size: 0.65rem; border: 2px solid white; }
-
-        /* RESPONSIVIDADE */
-        @media (min-width: 768px) {
-            .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 30px; }
-            .hero { height: 350px; }
-            .hero-text h2 { font-size: 3rem; }
-            .modal-content { max-width: 500px; }
-        }
-        @media (max-width: 768px) {
-            .desktop-nav { display: none; }
-            .bottom-nav { display: flex; }
-            
-            /* Modal estilo "Bottom Sheet" no celular */
-            .modal-content {
-                max-width: 100%; width: 100%; border-radius: 20px 20px 0 0;
-                position: absolute; bottom: 0; margin: 0; transform: translateY(100%); max-height: 85vh;
-            }
-            .modal-overlay.open .modal-content { transform: translateY(0); }
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
     <header>
@@ -224,388 +19,230 @@
                 <span class="logo-icon">🌸</span>
                 <h1>Anne Flores</h1>
             </div>
-            <nav class="desktop-nav">
-                <button class="nav-btn"><span class="material-icons">search</span></button>
-                <button class="nav-btn" id="cart-btn-desktop" style="position: relative;">
-                    <span class="material-icons">shopping_cart</span>
-                    <span class="cart-badge desktop-badge">0</span>
-                </button>
+
+            <nav class="desktop-menu">
+                <button class="menu-link active" onclick="switchView('home')">Início</button>
+                <button class="menu-link" onclick="switchView('about')">Sobre Nós</button>
+                <button class="menu-link" onclick="switchView('contact')">Contato</button>
             </nav>
+
+            <button class="nav-btn" id="cart-btn-desktop">
+                <span class="material-icons">shopping_cart</span>
+                <span class="cart-badge desktop-badge">0</span>
+            </button>
         </div>
     </header>
 
-    <section class="hero">
-        <div class="container hero-text">
-            <h2>Surpreenda quem você ama</h2>
-            <p>Atendemos todo o Alto Acre com entregas rápidas.</p>
-            <a href="#produtos" class="cta-button">Ver Catálogo</a>
-        </div>
-    </section>
+    <main id="view-home" class="view-section active">
 
-    <section class="info-bar">
-        <div class="container">
-            <div class="status">
-                <span class="material-icons status-icon">store</span>
-                <div>
-                    <strong>Aberta agora</strong>
-                    <p>09:00 - 16:00</p>
+        <div class="container sticky-tabs-wrapper">
+            <div class="tabs-container">
+                <div class="tabs-wrapper" id="category-tabs">
+                    <button class="tab-btn active" data-category="todos">
+                        <span class="material-icons">grid_view</span> Todos
+                    </button>
+                    <button class="tab-btn" data-category="monte">
+                        <span class="material-icons">build</span> Monte o Seu
+                    </button>
+                    <button class="tab-btn" data-category="buques">
+                        <span class="material-icons">local_florist</span> Buquês
+                    </button>
+                    <button class="tab-btn" data-category="cestas">
+                        <span class="material-icons">shopping_basket</span> Cestas
+                    </button>
+                    <button class="tab-btn" data-category="kits">
+                        <span class="material-icons">card_giftcard</span> Presentes
+                    </button>
                 </div>
             </div>
-            <div class="location">
-                <span class="material-icons">place</span>
-                <p>Atendemos todo Alto Acre!</p>
+        </div>
+
+        <section class="container products-section">
+            <div id="product-grid" class="product-grid">
+            </div>
+        </section>
+    </main>
+
+    <main id="view-about" class="view-section" style="display: none;">
+        <div class="container fade-in">
+            <div class="about-hero">
+                <h2>Transformando sentimentos em flores</h2>
+                <p>Desde 2020 trazendo cor e alegria para o Alto Acre.</p>
+            </div>
+
+            <div class="about-content">
+                <div class="about-card">
+                    <span class="material-icons icon-big">favorite</span>
+                    <h3>Feito com Amor</h3>
+                    <p>Cada arranjo é montado manualmente por especialistas, garantindo que seu presente seja único.</p>
+                </div>
+                <div class="about-card">
+                    <span class="material-icons icon-big">local_shipping</span>
+                    <h3>Entrega Ágil</h3>
+                    <p>Contamos com frota própria para entregas rápidas e seguras em toda a região.</p>
+                </div>
+                <div class="about-card">
+                    <span class="material-icons icon-big">verified</span>
+                    <h3>Qualidade Premium</h3>
+                    <p>Trabalhamos apenas com flores frescas selecionadas diariamente.</p>
+                </div>
             </div>
         </div>
-    </section>
+    </main>
 
-    <section class="quick-actions container">
-        <button class="action-btn">
-            <span class="material-icons">call</span> Ligar
-        </button>
-        <button class="action-btn">
-            <span class="material-icons">storefront</span> Catálogo
-        </button>
-        <button class="action-btn">
-            <span class="material-icons">share</span> Compartilhar
-        </button>
-    </section>
+    <main id="view-contact" class="view-section" style="display: none;">
+        <div class="container fade-in">
 
-    <section id="produtos" class="products-section container">
-        <div class="section-header">
-            <h3>Nossos Produtos</h3>
-            <a href="#" class="view-all">MOSTRAR TUDO ></a>
+            <div class="contact-header">
+                <h2>Fale Conosco</h2>
+                <p>Estamos prontos para atender você em Brasiléia.</p>
+            </div>
+
+            <div class="contact-grid-layout">
+
+                <div class="info-column">
+
+                   <a href="https://wa.me/5568999999999" target="_blank" class="contact-row whatsapp-row">
+    <div class="row-icon whatsapp-bg">
+        <svg class="whatsapp-icon" viewBox="0 0 24 24" style="fill: white;">
+            <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.39-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24m4.58 10.21c-.22-.11-1.32-.65-1.52-.72-.2-.08-.35-.11-.49.11-.14.22-.56.71-.69.85-.12.14-.24.16-.47.05-.23-.11-.97-.36-1.84-1.13-.68-.61-1.14-1.36-1.27-1.59-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.37.08-.14.04-.28-.02-.4-.06-.11-.5-1.2-.68-1.64-.17-.43-.35-.37-.48-.38h-.41c-.14 0-.37.05-.56.26-.2.21-.75.73-.75 1.77s.77 2.05.87 2.19c.1.15 1.51 2.3 3.66 3.23 1.43.62 1.71.5 2.32.47.67-.04 1.32-.54 1.51-1.06.18-.52.18-.97.13-1.06-.06-.09-.21-.14-.43-.25"/>
+        </svg>
+    </div>
+    <div class="row-content">
+        <strong>WhatsApp Comercial</strong>
+        <span>(68) 99999-9999</span>
+    </div>
+    <div class="row-action">
+        <span class="material-icons">open_in_new</span>
+    </div>
+</a>
+
+                    <div class="contact-row">
+                        <div class="row-icon map-bg">
+                            <span class="material-icons">store</span>
+                        </div>
+                        <div class="row-content">
+                            <strong>Loja Física</strong>
+                            <span>Brasiléia, Acre</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-row">
+                        <div class="row-icon time-bg">
+                            <span class="material-icons">schedule</span>
+                        </div>
+                        <div class="row-content">
+                            <strong>Horário de Atendimento</strong>
+                            <span>Seg a Sáb: 08:00 às 18:00</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="map-column">
+                    <div class="map-frame">
+                        <iframe width="100%" height="100%" frameborder="0" style="border:0"
+                            src="https://maps.google.com/maps?q=-11.00876777,-68.7427751&hl=pt-br&z=16&output=embed"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <p class="map-caption">
+                        <span class="material-icons">location_on</span> Av. Prefeito Rolando Moreira, Brasiléia - AC
+                    </p>
+                </div>
+
+            </div>
         </div>
-        <div id="product-grid" class="product-grid"></div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Anne Flores. Todos os direitos reservados.</p>
-        </div>
-    </footer>
+    </main>
 
     <div id="cart-modal" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content cart-layout">
             <div class="modal-header">
-                <h3>Seu Carrinho</h3>
-                <button id="close-cart" class="close-btn">&times;</button>
+                <h3>Sua Sacola</h3>
+                <button class="close-btn cart-close"><span class="material-icons">close</span></button>
             </div>
-            
+
             <div id="cart-items" class="cart-items-container">
-                <p class="empty-msg">Seu carrinho está vazio.</p>
             </div>
 
             <div class="client-info">
                 <h4>Seus Dados</h4>
                 <div class="input-group">
-                    <label for="client-name">Nome:</label>
-                    <input type="text" id="client-name" placeholder="Seu nome">
-                </div>
-                <div class="input-group">
-                    <label for="client-phone">Telefone:</label>
-                    <input type="tel" id="client-phone" placeholder="(XX) 99999-9999">
+                    <input type="text" id="client-name" placeholder="Seu Nome">
+                    <input type="tel" id="client-phone" placeholder="WhatsApp">
                 </div>
             </div>
 
             <div class="modal-footer">
                 <div class="total-row">
-                    <span>Total:</span>
+                    <span>Total</span>
                     <span id="cart-total">R$ 0,00</span>
                 </div>
-                <button id="checkout-btn" class="checkout-btn">
-                    <span class="material-icons">whatsapp</span> Finalizar no WhatsApp
-                </button>
+               <button id="checkout-btn" class="checkout-btn">
+    <svg class="whatsapp-icon" viewBox="0 0 24 24">
+        <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.39-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24m4.58 10.21c-.22-.11-1.32-.65-1.52-.72-.2-.08-.35-.11-.49.11-.14.22-.56.71-.69.85-.12.14-.24.16-.47.05-.23-.11-.97-.36-1.84-1.13-.68-.61-1.14-1.36-1.27-1.59-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.37.08-.14.04-.28-.02-.4-.06-.11-.5-1.2-.68-1.64-.17-.43-.35-.37-.48-.38h-.41c-.14 0-.37.05-.56.26-.2.21-.75.73-.75 1.77s.77 2.05.87 2.19c.1.15 1.51 2.3 3.66 3.23 1.43.62 1.71.5 2.32.47.67-.04 1.32-.54 1.51-1.06.18-.52.18-.97.13-1.06-.06-.09-.21-.14-.43-.25"/>
+    </svg>
+    Enviar Pedido
+</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="product-details-modal" class="modal-overlay">
+        <div class="modal-content details-layout">
+            <div class="modal-header">
+                <h3 id="detail-title">Montar Buquê</h3>
+                <button class="close-btn detail-close"><span class="material-icons">close</span></button>
+            </div>
+
+            <div class="details-body">
+                <img id="detail-img" src="" alt="Produto">
+
+                <div class="qty-section">
+                    <label>Quantidade de Flores:</label>
+                    <div class="qty-control">
+                        <button id="qty-minus">-</button>
+                        <span id="qty-value">6</span>
+                        <button id="qty-plus">+</button>
+                    </div>
+                    <p class="price-hint">Preço por unidade: <span id="unit-price">R$ 0,00</span></p>
+                </div>
+
+                <div class="colors-section">
+                    <label>Escolha as cores:</label>
+                    <div id="colors-grid" class="colors-grid">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="total-row">
+                    <span>Subtotal:</span>
+                    <span id="detail-total">R$ 0,00</span>
+                </div>
+                <button id="add-custom-btn" class="checkout-btn">Confirmar</button>
             </div>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <a href="#" class="nav-item active">
-            <span class="material-icons">home</span>
-            <span>Início</span>
-        </a>
-        <a href="#produtos" class="nav-item">
-            <span class="material-icons">grid_view</span>
-            <span>Produtos</span>
-        </a>
-        <div class="nav-item" id="cart-btn-mobile" style="position: relative;">
+        <button class="nav-item active" onclick="switchView('home')">
+            <span class="material-icons">storefront</span><span>Loja</span>
+        </button>
+        <button class="nav-item" onclick="switchView('about')">
+            <span class="material-icons">info</span><span>Sobre</span>
+        </button>
+        <div class="nav-item" id="cart-btn-mobile">
             <span class="material-icons">shopping_bag</span>
-            <span>Sacola</span>
             <span class="cart-badge mobile-badge">0</span>
+            <span>Sacola</span>
         </div>
-        <a href="https://wa.me/5568999999999" target="_blank" class="nav-item">
-            <span class="material-icons">chat</span>
-            <span>Contato</span>
-        </a>
+        <button class="nav-item" onclick="switchView('contact')">
+            <span class="material-icons">support_agent</span><span>Contato</span>
+        </button>
     </nav>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            
-            // 1. LISTA DE PRODUTOS
-            // OBS: Se as imagens não existirem na pasta, será usada uma imagem de erro.
-            const products = [
-                {
-                    id: 1,
-                    name: "Buquê de Rosas Vermelhas",
-                    description: "Clássico romântico com rosas selecionadas.",
-                    price: 180.00,
-                    image: "assets/img/buque-rosas.jpg" 
-                },
-                {
-                    id: 2,
-                    name: "Cesta de Café da Manhã",
-                    description: "Pães, frutas e chocolate.",
-                    price: 250.00,
-                    image: "assets/img/cesta-cafe.jpg"
-                },
-                {
-                    id: 3,
-                    name: "Kit Bebê Azul",
-                    description: "Presente delicado.",
-                    price: 145.90,
-                    image: "assets/img/kit-bebe.jpg"
-                },
-                {
-                    id: 4,
-                    name: "Box Luxo Vermelho",
-                    description: "Elegância em caixa dourada.",
-                    price: 210.00,
-                    image: "assets/img/box-luxo.jpg"
-                },
-                {
-                    id: 5,
-                    name: "Buquê Misto",
-                    description: "A alegria das cores.",
-                    price: 120.00,
-                    image: "assets/img/buque-misto.jpg"
-                },
-                {
-                    id: 6,
-                    name: "Rosas e Mosquitinhos",
-                    description: "Delicadeza rústica.",
-                    price: 95.00,
-                    image: "assets/img/rosas-mosq.jpg"
-                }
-            ];
-
-            let cart = [];
-
-            // 2. SELEÇÃO DE ELEMENTOS
-            const productGrid = document.getElementById("product-grid");
-            const cartBtnDesktop = document.getElementById("cart-btn-desktop");
-            const cartBtnMobile = document.getElementById("cart-btn-mobile");
-            const desktopBadge = document.querySelector(".desktop-badge");
-            const mobileBadge = document.querySelector(".mobile-badge");
-
-            const modal = document.getElementById("cart-modal");
-            const closeCartBtn = document.getElementById("close-cart");
-            const cartItemsContainer = document.getElementById("cart-items");
-            const cartTotalElement = document.getElementById("cart-total");
-            const checkoutBtn = document.getElementById("checkout-btn");
-            
-            const clientNameInput = document.getElementById("client-name");
-            const clientPhoneInput = document.getElementById("client-phone");
-
-            // 3. STORAGE E UTILITÁRIOS
-            function loadClientData() {
-                const savedName = localStorage.getItem("anneFlores_name");
-                const savedPhone = localStorage.getItem("anneFlores_phone");
-                if (savedName) clientNameInput.value = savedName;
-                if (savedPhone) clientPhoneInput.value = savedPhone;
-            }
-
-            function saveClientData() {
-                localStorage.setItem("anneFlores_name", clientNameInput.value);
-                localStorage.setItem("anneFlores_phone", clientPhoneInput.value);
-            }
-
-            const formatCurrency = (value) => {
-                return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-            };
-
-            // 4. RENDERIZAÇÃO
-            function createProductCard(product) {
-                const article = document.createElement("article");
-                article.className = "card";
-                const imgPath = product.image;
-
-                // onerror="this.src=..." garante que o site não quebre se a foto não existir
-                article.innerHTML = `
-                    <img src="${imgPath}" alt="${product.name}" class="card-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=Sem+Foto'">
-                    <div class="card-body">
-                        <h4 class="card-title">${product.name}</h4>
-                        <p class="card-desc">${product.description}</p>
-                        <div class="card-footer" style="margin-top: auto;">
-                            <span class="card-price">${formatCurrency(product.price)}</span>
-                            <button class="add-btn" data-id="${product.id}">
-                                <span class="material-icons" style="font-size: 1.2rem;">add_shopping_cart</span>
-                                Adicionar
-                            </button>
-                        </div>
-                    </div>
-                `;
-                return article;
-            }
-
-            function renderProducts() {
-                const fragment = document.createDocumentFragment();
-                products.forEach(product => {
-                    fragment.appendChild(createProductCard(product));
-                });
-                productGrid.appendChild(fragment);
-
-                document.querySelectorAll('.add-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const id = parseInt(e.target.closest('.add-btn').dataset.id);
-                        addToCart(id);
-                    });
-                });
-            }
-
-            // 5. LÓGICA DO CARRINHO
-            function addToCart(id) {
-                const product = products.find(p => p.id === id);
-                if (product) {
-                    cart.push(product);
-                    updateCartUI();
-                    
-                    // Feedback botão
-                    const btn = document.querySelector(`button[data-id="${id}"]`);
-                    if(btn) {
-                        const originalHTML = btn.innerHTML;
-                        btn.innerHTML = `<span class="material-icons" style="font-size:1.2rem">check</span> Adicionado`;
-                        btn.style.backgroundColor = "#4CAF50";
-                        setTimeout(() => {
-                            btn.innerHTML = originalHTML;
-                            btn.style.backgroundColor = "";
-                        }, 1000);
-                    }
-                }
-            }
-
-            function removeFromCart(index) {
-                cart.splice(index, 1);
-                updateCartUI();
-                renderCartItems();
-            }
-
-            function updateCartUI() {
-                // Atualiza Desktop
-                if (desktopBadge) {
-                    desktopBadge.innerText = cart.length;
-                    desktopBadge.style.display = cart.length > 0 ? 'flex' : 'none';
-                }
-                // Atualiza Mobile
-                if (mobileBadge) {
-                    mobileBadge.innerText = cart.length;
-                    mobileBadge.style.display = cart.length > 0 ? 'flex' : 'none';
-                }
-            }
-
-            function renderCartItems() {
-                cartItemsContainer.innerHTML = "";
-                let total = 0;
-
-                if (cart.length === 0) {
-                    cartItemsContainer.innerHTML = '<p class="empty-msg">Seu carrinho está vazio.</p>';
-                } else {
-                    cart.forEach((item, index) => {
-                        total += item.price;
-                        const div = document.createElement("div");
-                        div.className = "cart-item";
-                        div.innerHTML = `
-                            <div class="cart-item-info">
-                                <h4>${item.name}</h4>
-                                <p>${formatCurrency(item.price)}</p>
-                            </div>
-                            <button class="remove-item" data-index="${index}">Remover</button>
-                        `;
-                        cartItemsContainer.appendChild(div);
-                    });
-
-                    document.querySelectorAll('.remove-item').forEach(btn => {
-                        btn.addEventListener('click', (e) => {
-                            removeFromCart(parseInt(e.target.dataset.index));
-                        });
-                    });
-                }
-                cartTotalElement.innerText = formatCurrency(total);
-            }
-
-            // 6. WHATSAPP CHECKOUT
-            function checkoutWhatsApp() {
-                if (cart.length === 0) {
-                    alert("Seu carrinho está vazio!");
-                    return;
-                }
-
-                const name = clientNameInput.value.trim();
-                const phone = clientPhoneInput.value.trim();
-
-                if (!name || !phone) {
-                    alert("Por favor, preencha seu Nome e Telefone para continuar.");
-                    return;
-                }
-
-                saveClientData();
-
-                // COLOQUE O NÚMERO DA LOJA AQUI
-                const storePhoneNumber = "5568999999999"; 
-                
-                const baseUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-
-                let message = `Olá, Anne Flores! Novo pedido via site:\n`;
-                message += `\n👤 *Cliente:* ${name}`;
-                message += `\n📞 *Telefone:* ${phone}\n`;
-                message += `\n🛒 *PEDIDO:*\n`;
-                
-                let total = 0;
-
-                cart.forEach(item => {
-                    total += item.price;
-                    let imageUrl = item.image;
-                    if (!item.image.startsWith('http')) {
-                        imageUrl = baseUrl + item.image;
-                    }
-                    message += `\n➖ *${item.name}*`;
-                    message += `\n💰 ${formatCurrency(item.price)}`;
-                    message += `\n📸 Foto: ${imageUrl}\n`;
-                });
-
-                message += `\n------------------------------`;
-                message += `\n*TOTAL: ${formatCurrency(total)}*`;
-                message += `\n\nAguardo confirmação!`;
-
-                const encodedMessage = encodeURIComponent(message);
-                const url = `https://wa.me/${storePhoneNumber}?text=${encodedMessage}`;
-
-                window.open(url, '_blank');
-            }
-
-            // 7. EVENTOS
-            function openModal() {
-                renderCartItems();
-                modal.classList.add('open');
-            }
-
-            if(cartBtnDesktop) cartBtnDesktop.addEventListener('click', openModal);
-            if(cartBtnMobile) cartBtnMobile.addEventListener('click', openModal);
-
-            closeCartBtn.addEventListener('click', () => {
-                modal.classList.remove('open');
-            });
-
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.remove('open');
-            });
-
-            checkoutBtn.addEventListener('click', checkoutWhatsApp);
-
-            // Inicialização
-            loadClientData();
-            renderProducts();
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
