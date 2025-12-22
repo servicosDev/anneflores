@@ -1,381 +1,172 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // --- 1. DADOS DOS PRODUTOS ---
-  const products = [
-    // PRODUTO ESPECIAL: MONTE SEU BUQUÊ
-    {
-      id: 99,
-      name: "Monte Seu Buquê",
-      category: "monte",
-      custom: true, // Ativa botão "Montar"
-      unitPrice: 15.0, // Preço por flor
-      minQty: 6,
-      img: "https://tessfleur.com.br/wp-content/uploads/2025/07/ad973dc2a5bb6c487ab88d59eb887409.jpeg",
-      colors: ["Vermelha", "Branca", "Rosa", "Amarela", "Azul", "Salmão"],
-    },
+    // --- HELPERS E DADOS ---
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+    const format = (v) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
+    
+    // Estado inicial com recuperação do LocalStorage
+    let cart = JSON.parse(localStorage.getItem('anne_cart') || '[]');
+    let currentCustom = null, qty = 6;
+    
+    // Recupera dados do cliente
+    if(localStorage.getItem('anne_name')) $('#client-name').value = localStorage.getItem('anne_name');
+    if(localStorage.getItem('anne_phone')) $('#client-phone').value = localStorage.getItem('anne_phone');
 
-    // PRODUTOS NORMAIS
-    {
-      id: 1,
-      name: "12 Rosas Buquê(o queridinho)",
-      category: "buques",
-      price: 160.0,
-      img: "src/img/flor12.jpg",
-    },
-    {
-      id: 2,
-      name: "6 Rosas Buquê",
-      category: "buques",
-      price: 110.0,
-      img: "src/img/flor6.jpg",
-    },
-    {
-      id: 3,
-      name: "Cesta De Cafe da Manhã",
-      category: "cestas",
-      price: 255.0,
-      img: "src/img/cafeflor.jpg",
-    },
-    {
-      id: 4,
-      name: "Cesta de Maternidade",
-      category: "cestas",
-      price: 250.0,
-      img: "src/img/cestaflor.jpg",
-    },
-    {
-      id: 5,
-      name: "Kit Bebê",
-      category: "kits",
-      price: 250.0,
-      img: "src/img/kitbebe.png",
-    },
-    {
-      id: 6,
-      name: "Box de Rosas",
-      category: "kits",
-      price: 195.0,
-      img: "src/img/boxflor.jpg",
-    },
-  ];
-
-  let cart = [];
-  let currentCustom = null;
-  let qty = 6;
-
-  // Elementos DOM
-  const grid = document.getElementById("product-grid");
-  const cartModal = document.getElementById("cart-modal");
-  const detailsModal = document.getElementById("product-details-modal");
-  const cartItems = document.getElementById("cart-items");
-  const format = (v) =>
-    new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(v);
-
-  // --- 2. SISTEMA DE SPA (TROCA DE TELAS) ---
-  window.switchView = (viewName) => {
-    // Esconde todas as telas
-    document.querySelectorAll(".view-section").forEach((el) => {
-      el.style.display = "none";
-      el.classList.remove("active");
+    // Salva inputs ao digitar
+    $$('#client-name, #client-phone').forEach(input => {
+        input.addEventListener('input', e => localStorage.setItem(e.target.id === 'client-name' ? 'anne_name' : 'anne_phone', e.target.value));
     });
 
-    // Remove active dos botões de navegação
-    document
-      .querySelectorAll(".menu-link, .nav-item")
-      .forEach((el) => el.classList.remove("active"));
+    const products = [
+        { id: 99, name: "Monte Seu Buquê", category: "monte", custom: true, unitPrice: 15.0, minQty: 6, img: "https://tessfleur.com.br/wp-content/uploads/2025/07/ad973dc2a5bb6c487ab88d59eb887409.jpeg", colors: ["Vermelha", "Branca", "Rosa", "Amarela", "Azul", "Salmão"] },
+        { id: 1, name: "12 Rosas Buquê(o queridinho)", category: "buques", price: 160.0, img: "src/img/flor12.jpg" },
+        { id: 2, name: "6 Rosas Buquê", category: "buques", price: 110.0, img: "src/img/flor6.jpg" },
+        { id: 3, name: "Cesta De Cafe da Manhã", category: "cestas", price: 255.0, img: "src/img/cafeflor.jpg" },
+        { id: 4, name: "Cesta de Maternidade", category: "cestas", price: 250.0, img: "src/img/cestaflor.jpg" },
+        { id: 5, name: "Kit Bebê", category: "kits", price: 250.0, img: "src/img/kitbebe.png" },
+        { id: 6, name: "Box de Rosas", category: "kits", price: 195.0, img: "src/img/boxflor.jpg" },
+    ];
 
-    // Mostra a tela certa
-    const target = document.getElementById(`view-${viewName}`);
-    if (target) {
-      target.style.display = "block";
-      setTimeout(() => target.classList.add("active"), 10);
+    // --- FUNÇÕES GLOBAIS (window) PARA HTML ---
+    
+    // 1. Navegação SPA
+    window.switchView = (view) => {
+        $$('.view-section').forEach(el => { el.style.display = 'none'; el.classList.remove('active'); });
+        $$('.menu-link, .nav-item').forEach(el => el.classList.remove('active'));
+        
+        const target = $(`#view-${view}`);
+        if (target) { target.style.display = 'block'; setTimeout(() => target.classList.add('active'), 10); }
+        
+        $$(`[onclick="switchView('${view}')"]`).forEach(el => el.classList.add('active'));
+        window.scrollTo(0, 0);
+    };
+
+    // 2. Carrinho (Adicionar e Remover)
+    window.addStandard = (id) => {
+        cart.push({ ...products.find(p => p.id === id), desc: "" });
+        updateCart();
+        alert("Adicionado à sacola!");
+    };
+
+    window.removeItem = (i) => { cart.splice(i, 1); updateCart(); };
+
+    function updateCart() {
+        localStorage.setItem('anne_cart', JSON.stringify(cart)); // Save
+        
+        const total = cart.reduce((acc, item) => acc + item.price, 0);
+        $('#cart-total').innerText = format(total);
+        
+        $$('.cart-badge').forEach(b => { b.innerText = cart.length; b.style.display = cart.length ? 'flex' : 'none'; });
+        
+        $('#cart-items').innerHTML = cart.length ? cart.map((item, i) => `
+            <div style="display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;align-items:center;">
+                <div><strong>${item.name}</strong><br><small style="color:#777">${item.desc || ""}</small></div>
+                <div style="text-align:right;color:#d86b7c;font-weight:bold">${format(item.price)}
+                <div onclick="removeItem(${i})" style="color:red;cursor:pointer;font-size:0.75rem">Remover</div></div>
+            </div>`).join('') : "<p style='text-align:center;color:#aaa;padding:20px'>Sacola vazia.</p>";
     }
 
-    // Ativa botões (Desktop e Mobile)
-    const desktopLink = document.querySelector(
-      `.menu-link[onclick="switchView('${viewName}')"]`
-    );
-    if (desktopLink) desktopLink.classList.add("active");
-
-    const mobileLink = document.querySelector(
-      `.nav-item[onclick="switchView('${viewName}')"]`
-    );
-    if (mobileLink) mobileLink.classList.add("active");
-
-    window.scrollTo(0, 0);
-  };
-
-  // --- 3. RENDERIZAÇÃO DO CATÁLOGO ---
-  function render(cat = "todos") {
-    grid.innerHTML = "";
-    const list =
-      cat === "todos" ? products : products.filter((p) => p.category === cat);
-
-    if (list.length === 0) {
-      grid.innerHTML =
-        "<p style='grid-column:1/-1;text-align:center;padding:20px;color:#888'>Nenhum produto encontrado nesta categoria.</p>";
-      return;
-    }
-
-    list.forEach((p) => {
-      const card = document.createElement("article");
-      card.className = "card";
-
-      // Define se o botão é "Montar" ou "Adicionar"
-      const btn = p.custom
-        ? `<button class="add-btn" onclick="openDetails(${p.id})">🛠️ Montar</button>`
-        : `<button class="add-btn" onclick="addStandard(${p.id})">Adicionar</button>`;
-
-      const price = p.custom
-        ? `A partir de ${format(p.unitPrice * p.minQty)}`
-        : format(p.price);
-
-      card.innerHTML = `
-                <img src="${p.img}" class="card-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300?text=Anne+Flores'">
+    // 3. Renderização de Produtos
+    function render(cat = "todos") {
+        const list = cat === "todos" ? products : products.filter(p => p.category === cat);
+        $('#product-grid').innerHTML = list.length ? list.map(p => `
+            <article class="card">
+                <img src="${p.img}" class="card-img" loading="lazy" onerror="this.src='https://via.placeholder.com/300'">
                 <div class="card-body">
                     <h4 class="card-title">${p.name}</h4>
-                    <span class="card-price">${price}</span>
-                    ${btn}
+                    <span class="card-price">${p.custom ? `A partir de ${format(p.unitPrice * p.minQty)}` : format(p.price)}</span>
+                    <button class="add-btn" onclick="${p.custom ? `openDetails(${p.id})` : `addStandard(${p.id})`}">${p.custom ? '🛠️ Montar' : 'Adicionar'}</button>
                 </div>
-            `;
-      grid.appendChild(card);
-    });
-  }
+            </article>`).join('') : "<p style='padding:20px;text-align:center;width:100%'>Nenhum produto aqui.</p>";
+    }
 
-  // Filtro por Abas
-  document.querySelectorAll(".tab-btn").forEach((btn) => {
-    btn.onclick = () => {
-      document
-        .querySelectorAll(".tab-btn")
-        .forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      render(btn.dataset.category);
+    // 4. Customização (Monte seu Buquê)
+    window.openDetails = (id) => {
+        currentCustom = products.find(p => p.id === id);
+        qty = currentCustom.minQty;
+        
+        $('#detail-title').innerText = currentCustom.name;
+        $('#detail-img').src = currentCustom.img;
+        $('#unit-price').innerText = format(currentCustom.unitPrice);
+        
+        const colorsMap = { Vermelha: "#d32f2f", Branca: "#f5f5f5", Rosa: "#ff4081", Amarela: "#ffeb3b", Azul: "#2196f3", Salmão: "#ff8a65" };
+        $('#colors-grid').innerHTML = currentCustom.colors.map(c => `
+            <label><input type="checkbox" class="color-checkbox" value="${c}">
+            <span class="color-tag"><span class="dot" style="background:${colorsMap[c]||'#ccc'}"></span>${c}</span></label>
+        `).join('');
+        
+        updateTotal();
+        $('#product-details-modal').classList.add("open");
     };
-  });
 
-  // --- 4. LÓGICA DE CARRINHO E COMPRA ---
+    const updateTotal = () => {
+        $('#qty-value').innerText = qty;
+        $('#detail-total').innerText = format(qty * currentCustom.unitPrice);
+    };
 
-  // Adicionar Produto Normal
-  window.addStandard = (id) => {
-    const p = products.find((x) => x.id === id);
-    cart.push({ ...p, desc: "" });
-    updateCart();
-    alert("Produto adicionado à sacola!");
-  };
+    $('#qty-minus').onclick = () => { if (qty > currentCustom.minQty) { qty--; updateTotal(); }};
+    $('#qty-plus').onclick = () => { qty++; updateTotal(); };
 
-  // Atualizar UI do Carrinho
-  function updateCart() {
-    const count = cart.length;
-    document.querySelectorAll(".cart-badge").forEach((b) => {
-      b.innerText = count;
-      b.style.display = count ? "flex" : "none";
+    $('#add-custom-btn').onclick = () => {
+        const selected = Array.from($$('.color-checkbox:checked')).map(c => c.value);
+        if (!selected.length) return alert("Selecione uma cor!");
+        
+        cart.push({ name: `${currentCustom.name} (${qty} flores)`, price: qty * currentCustom.unitPrice, desc: `Cores: ${selected.join(", ")}` });
+        updateCart();
+        $('#product-details-modal').classList.remove("open");
+    };
+
+    // 5. Checkout WhatsApp
+    $('#checkout-btn').onclick = () => {
+        if (!cart.length) return alert("Carrinho vazio!");
+        const [nome, tel] = [$('#client-name').value, $('#client-phone').value];
+        if (!nome || !tel) return alert("Preencha seus dados!");
+
+        const base = window.location.origin + window.location.pathname.replace("index.html", "");
+        let msg = `Olá! Sou *${nome}*.
+*Meu Pedido:*
+`;
+        
+        cart.forEach(i => {
+            let link = i.img && !i.img.startsWith('http') ? base + i.img.replace('./','') : i.img;
+            msg += `
+- ${i.name} | ${format(i.price)}${i.desc ? `
+  (${i.desc})` : ''}${link ? `
+  📸 ${link}` : ''}
+`;
+        });
+        
+        msg += `
+*Total: ${$('#cart-total').innerText}*`;
+        window.open(`https://wa.me/5568999987876?text=${encodeURIComponent(msg)}`);
+    };
+
+    // --- EVENTOS E INICIALIZAÇÃO ---
+    $$('.tab-btn').forEach(btn => btn.onclick = () => {
+        $$('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render(btn.dataset.category);
     });
 
-    cartItems.innerHTML = "";
-    let total = 0;
+    // Modais
+    const toggleCart = () => $('#cart-modal').classList.toggle("open");
+    $('#cart-btn-desktop').onclick = toggleCart;
+    $('#cart-btn-mobile').onclick = toggleCart;
+    $$('.close-btn').forEach(b => b.onclick = () => $$('.modal-overlay').forEach(m => m.classList.remove('open')));
 
-    if (!count) {
-      cartItems.innerHTML =
-        "<p style='text-align:center;color:#aaa;margin-top:20px'>Sua sacola está vazia.</p>";
-    } else {
-      cart.forEach((item, index) => {
-        total += item.price;
-        const div = document.createElement("div");
-        div.style.cssText =
-          "display:flex;justify-content:space-between;padding:10px;border-bottom:1px solid #eee;align-items:center;";
-        div.innerHTML = `
-                    <div>
-                        <strong style="font-size:0.9rem">${
-                          item.name
-                        }</strong><br>
-                        <small style="color:#777;font-size:0.8rem">${
-                          item.desc || ""
-                        }</small>
-                    </div>
-                    <div style="text-align:right">
-                        <div style="color:#d86b7c;font-weight:bold">${format(
-                          item.price
-                        )}</div>
-                        <small onclick="removeItem(${index})" style="color:red;cursor:pointer;font-size:0.75rem">Remover</small>
-                    </div>
-                `;
-        cartItems.appendChild(div);
-      });
-    }
-    document.getElementById("cart-total").innerText = format(total);
-  }
-
-  window.removeItem = (i) => {
-    cart.splice(i, 1);
-    updateCart();
-  };
-
-  // --- 5. LÓGICA DE PERSONALIZAÇÃO (MODAL) ---
-  window.openDetails = (id) => {
-    currentCustom = products.find((p) => p.id === id);
-    qty = currentCustom.minQty;
-
-    // Preenche modal
-    document.getElementById("detail-title").innerText = currentCustom.name;
-    document.getElementById("detail-img").src = currentCustom.img;
-    document.getElementById("unit-price").innerText = format(
-      currentCustom.unitPrice
-    );
-
-    // Gera Cores
-    const cGrid = document.getElementById("colors-grid");
-    cGrid.innerHTML = "";
-    currentCustom.colors.forEach((c) => {
-      const colorCode = getColor(c);
-      cGrid.innerHTML += `
-                <label>
-                    <input type="checkbox" class="color-checkbox" value="${c}">
-                    <span class="color-tag">
-                        <span class="dot" style="background:${colorCode}"></span>${c}
-                    </span>
-                </label>`;
-    });
-    updateTotal();
-    detailsModal.classList.add("open");
-  };
-
-  function updateTotal() {
-    document.getElementById("qty-value").innerText = qty;
-    document.getElementById("detail-total").innerText = format(
-      qty * currentCustom.unitPrice
-    );
-  }
-
-  document.getElementById("qty-minus").onclick = () => {
-    if (qty > currentCustom.minQty) {
-      qty--;
-      updateTotal();
-    }
-  };
-  document.getElementById("qty-plus").onclick = () => {
-    qty++;
-    updateTotal();
-  };
-
-  // Adicionar Customizado ao Carrinho
-  document.getElementById("add-custom-btn").onclick = () => {
-    const selected = Array.from(
-      document.querySelectorAll(".color-checkbox:checked")
-    ).map((c) => c.value);
-    if (!selected.length) return alert("Selecione pelo menos uma cor!");
-
-    cart.push({
-      name: `${currentCustom.name} (${qty} rosas)`,
-      price: qty * currentCustom.unitPrice,
-      desc: `Cores: ${selected.join(", ")}`,
-    });
-    updateCart();
-    detailsModal.classList.remove("open");
-    alert("Buquê personalizado criado!");
-  };
-
-  // --- 6. CHECKOUT WHATSAPP (ATUALIZADO COM LINKS DE FOTO) ---
-  document.getElementById("checkout-btn").onclick = () => {
-    if (!cart.length) return alert("Carrinho vazio!");
-    const nome = document.getElementById("client-name").value;
-    const tel = document.getElementById("client-phone").value;
-    if (!nome || !tel) return alert("Preencha nome e telefone!");
-
-    // Calcula o endereço base do site para criar o link da foto
-    const baseUrl =
-      window.location.origin +
-      window.location.pathname.replace("index.html", "");
-
-    let msg = `Olá! Sou *${nome}*.\nMeu Pedido:\n`;
-    let total = 0;
-
-    cart.forEach((i) => {
-      msg += `\n- ${i.name} | ${format(i.price)}`;
-      if (i.desc) msg += `\n  (${i.desc})`;
-
-      // --- LÓGICA DO LINK DA FOTO ---
-      if (i.img) {
-        // Se for link externo (começa com http), usa direto. Se for local, monta o link.
-        let fullLink = i.img;
-        if (!i.img.startsWith("http")) {
-          const cleanImgPath = i.img.startsWith("./")
-            ? i.img.substring(2)
-            : i.img;
-          fullLink = `${baseUrl}${cleanImgPath}`;
+    // Visualizador de Imagem
+    document.addEventListener("click", e => {
+        if (e.target.classList.contains("card-img")) {
+            $('#full-image').src = e.target.src;
+            $('#image-viewer-modal').style.display = 'flex';
+            setTimeout(() => $('#image-viewer-modal').classList.add("open"), 10);
         }
-        msg += `\n  📸 Foto: ${fullLink}`;
-      }
-
-      total += i.price;
-      msg += `\n`; // Pula linha
+        if (e.target.id === 'image-viewer-modal' || e.target.classList.contains('close-viewer')) {
+            $('#image-viewer-modal').classList.remove("open");
+            setTimeout(() => $('#image-viewer-modal').style.display = 'none', 300);
+        }
     });
-    msg += `\n\n*Total: ${format(total)}*`;
-    msg += `\n\nAguardo confirmação!`;
 
-    // Abre WhatsApp
-    window.open(`https://wa.me/5568999987876?text=${encodeURIComponent(msg)}`);
-  };
-
-  // --- 7. UTILITÁRIOS E INICIALIZAÇÃO ---
-  const toggleCart = () => cartModal.classList.toggle("open");
-  document.getElementById("cart-btn-desktop").onclick = toggleCart;
-  document.getElementById("cart-btn-mobile").onclick = toggleCart;
-
-  document.querySelectorAll(".close-btn").forEach(
-    (b) =>
-      (b.onclick = () => {
-        cartModal.classList.remove("open");
-        detailsModal.classList.remove("open");
-      })
-  );
-
-  function getColor(name) {
-    const map = {
-      Vermelha: "#d32f2f",
-      Branca: "#f5f5f5",
-      Rosa: "#ff4081",
-      Amarela: "#ffeb3b",
-      Azul: "#2196f3",
-      Salmão: "#ff8a65",
-    };
-    return map[name] || "#ccc";
-  }
-
-  // --- 8. VISUALIZADOR DE IMAGEM (NOVO) ---
-  // Este código faz a imagem abrir em tela cheia ao clicar
-  const imageModal = document.getElementById("image-viewer-modal");
-  const fullImage = document.getElementById("full-image");
-  const closeViewer = document.querySelector(".close-viewer");
-
-  document.addEventListener("click", (e) => {
-    // Se clicar em qualquer imagem com a classe 'card-img'
-    if (e.target.classList.contains("card-img")) {
-      if (imageModal && fullImage) {
-        imageModal.style.display = "flex"; // Mostra modal
-        fullImage.src = e.target.src; // Copia a imagem clicada
-        setTimeout(() => imageModal.classList.add("open"), 10);
-      }
-    }
-  });
-
-  if (closeViewer) {
-    closeViewer.onclick = () => {
-      imageModal.classList.remove("open");
-      setTimeout(() => (imageModal.style.display = "none"), 300);
-    };
-  }
-
-  if (imageModal) {
-    imageModal.onclick = (e) => {
-      if (e.target === imageModal) {
-        imageModal.classList.remove("open");
-        setTimeout(() => (imageModal.style.display = "none"), 300);
-      }
-    };
-  }
-
-  // Inicia App
-  render();
+    render();
+    updateCart();
 });
